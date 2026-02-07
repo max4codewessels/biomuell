@@ -8,27 +8,29 @@ const USERS = {
 let kvStore = new Map();
 let authTokens = new Map();
 
-// Event-Handler für Fetch-Requests
-self.addEventListener('fetch', event => {
-  const url = new URL(event.request.url);
-  
-  // API-Endpunkte
-  if (url.pathname === '/api/login') {
-    event.respondWith(handleLogin(event.request));
-  } else if (url.pathname === '/api/logout') {
-    event.respondWith(handleLogout(event.request));
-  } else if (url.pathname === '/api/runterbringen') {
-    event.respondWith(handleRunterbringen(event.request));
-  } else if (url.pathname === '/api/stats') {
-    event.respondWith(handleGetStats(event.request));
-  } else if (url.pathname === '/api/history') {
-    event.respondWith(handleGetHistory(event.request));
-  } else if (url.pathname === '/adminpanel') {
-    event.respondWith(serveAdminPanel(event.request));
-  } else {
-    event.respondWith(serveMainPage(event.request));
+// Hilfsfunktionen
+function generateToken() {
+  return Math.random().toString(36).substr(2) + Date.now().toString(36);
+}
+
+function getTokenFromRequest(request) {
+  const cookieHeader = request.headers.get('Cookie');
+  if (cookieHeader) {
+    const cookies = cookieHeader.split(';').map(c => c.trim());
+    const authCookie = cookies.find(c => c.startsWith('auth_token='));
+    if (authCookie) {
+      return authCookie.split('=')[1];
+    }
   }
-});
+  return null;
+}
+
+function redirectToLogin() {
+  return new Response('Redirecting to login...', {
+    status: 302,
+    headers: { 'Location': '/' }
+  });
+}
 
 // Login-Handler
 async function handleLogin(request) {
@@ -328,35 +330,26 @@ async function serveMainPage(request) {
   });
 }
 
-// Hilfsfunktionen
-function generateToken() {
-  return Math.random().toString(36).substr(2) + Date.now().toString(36);
-}
-
-function getTokenFromRequest(request) {
-  const cookieHeader = request.headers.get('Cookie');
-  if (cookieHeader) {
-    const cookies = cookieHeader.split(';').map(c => c.trim());
-    const authCookie = cookies.find(c => c.startsWith('auth_token='));
-    if (authCookie) {
-      return authCookie.split('=')[1];
+// Haupt-Handler für alle Requests
+export default {
+  async fetch(request, env, ctx) {
+    const url = new URL(request.url);
+    
+    // API-Endpunkte
+    if (url.pathname === '/api/login') {
+      return handleLogin(request);
+    } else if (url.pathname === '/api/logout') {
+      return handleLogout(request);
+    } else if (url.pathname === '/api/runterbringen') {
+      return handleRunterbringen(request);
+    } else if (url.pathname === '/api/stats') {
+      return handleGetStats(request);
+    } else if (url.pathname === '/api/history') {
+      return handleGetHistory(request);
+    } else if (url.pathname === '/adminpanel') {
+      return serveAdminPanel(request);
+    } else {
+      return serveMainPage(request);
     }
   }
-  return null;
-}
-
-function redirectToLogin() {
-  return new Response('Redirecting to login...', {
-    status: 302,
-    headers: { 'Location': '/' }
-  });
-}
-
-// Worker-Installation
-self.addEventListener('install', event => {
-  self.skipWaiting();
-});
-
-self.addEventListener('activate', event => {
-  event.waitUntil(clients.claim());
-});
+};
