@@ -6,8 +6,7 @@ compatibility_flags = ["nodejs_compat"]
 # KV Namespace für die Speicherung der Daten
 [[kv_namespaces]]
 binding = "RUNTERBRINGEN_KV"
-id = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"  # ID aus dem ersten Befehl
-preview_id = "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy"  # ID aus --preview Befehl
+id = "448eb32800e64a0cb9728b9253d57841"  # ID aus dem ersten Befehl
 
 [env.production]
 vars = { ENVIRONMENT = "production" }
