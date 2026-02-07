@@ -3,36 +3,21 @@ main = "service-worker.js"
 compatibility_date = "2024-01-01"
 compatibility_flags = ["nodejs_compat"]
 
-[env.production]
-vars = { ENVIRONMENT = "production" }
-
 # KV Namespace für die Speicherung der Daten
 [[kv_namespaces]]
 binding = "RUNTERBRINGEN_KV"
-id = ""  # Hier die ID deines KV-Namespace eintragen (nach erstellen)
-preview_id = ""  # Optional: Für Preview-Umgebungen
+id = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"  # ID aus dem ersten Befehl
+preview_id = "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy"  # ID aus --preview Befehl
 
-# Weitere Konfiguration für den Worker
-[site]
-bucket = "./public"  # Verzeichnis für statische Dateien (optional)
-entry-point = "."
+[env.production]
+vars = { ENVIRONMENT = "production" }
 
-# Environment Variablen (optional)
 [vars]
 SITE_TITLE = "Runterbringen Tracker"
 ADMIN_USERS = "max,maya"
 
-# Konfiguration für verschiedene Umgebungen
 [env.staging]
 name = "runterbringen-tracker-staging"
 vars = { ENVIRONMENT = "staging" }
 
-# Routen-Konfiguration
-# routes = [
-#   { pattern = "runterbringen.*.workers.dev", custom_domain = false },
-#   { pattern = "runterbringen.example.com", custom_domain = true }
-# ]
-
-# Logging (nur auf paid Plans)
-[logpush]
-enabled = false
+logpush = false
